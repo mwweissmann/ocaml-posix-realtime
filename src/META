@@ -1,0 +1,12 @@
+# OASIS_START
+# DO NOT EDIT (digest: b1a1c88f24e9407e53eea195fa09d8e5)
+version = "0.2"
+description = "POSIX clock and time functions"
+requires = "unix result"
+archive(byte) = "time.cma"
+archive(byte, plugin) = "time.cma"
+archive(native) = "time.cmxa"
+archive(native, plugin) = "time.cmxs"
+exists_if = "time.cma"
+# OASIS_STOP
+

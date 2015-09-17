@@ -1,0 +1,33 @@
+OASISFormat: 0.4
+Name:        time
+Version:     0.2
+Synopsis:    POSIX clock and time functions
+Authors:     Markus Weissmann
+License:     MIT
+Plugins:     META (0.4)
+
+Library "time"
+  Path:       src
+  CSources:   time_stubs.c
+  CCLib:      -lrt
+  CCOpt:      -O2 -Wall -Wextra -Wno-unused-parameter
+  BuildTools: ocamlbuild
+  Modules:    Time
+  BuildDepends: unix, result
+
+Document doclib
+  Title:                API reference for POSIX clock and time
+  Type:                 ocamlbuild (0.4)
+  Install:              false
+  BuildTools+:          ocamlbuild, ocamldoc
+  XOCamlbuildPath:      src
+  XOCamlbuildLibraries: time
+
+Executable "test"
+  Path:       test
+  MainIs:     test.ml
+  BuildDepends: time, result
+  CompiledObject: best
+  BuildTools: ocamlbuild
+  Install: false
+
