@@ -44,12 +44,11 @@ module Timespec = struct
     | d -> d
 
   let create sec nsec =
-    let open Int64 in
     let rec normalize sec nsec =
-      if nsec < zero then
-        normalize (pred sec) (add nsec max_nsec)
+      if nsec < Int64.zero then
+        normalize (Int64.pred sec) (Int64.add nsec max_nsec)
       else if nsec > max_nsec then
-        normalize (succ sec) (sub nsec max_nsec)
+        normalize (Int64.succ sec) (Int64.sub nsec max_nsec)
       else
         sec, nsec
     in
@@ -61,6 +60,11 @@ module Timespec = struct
 
   let sub x y =
     create Int64.(sub x.tv_sec y.tv_sec) Int64.(sub x.tv_nsec y.tv_nsec)
+
+  let add_sec sec t = { t with tv_sec = Int64.add t.tv_sec sec }
+  let sub_sec sec t = { t with tv_sec = Int64.sub t.tv_sec sec }
+  let add_nsec nsec t = create t.tv_sec (Int64.add t.tv_nsec nsec)
+  let sub_nsec nsec t = create t.tv_sec (Int64.sub t.tv_nsec nsec)
 end
 
 external clock_gettime : Clock.t -> (Timespec.t, [>`EUnix of Unix.error]) Result.result = "time_clock_gettime"
@@ -69,5 +73,7 @@ external clock_getres : Clock.t -> (Timespec.t, [>`EUnix of Unix.error]) Result.
 
 external clock_settime : Clock.t -> Timespec.t -> (unit, [>`EUnix of Unix.error]) Result.result = "time_clock_settime"
 
-external nanosleep : Clock.t -> ((bool * Clock.t), [> `EUnix of Unix.error]) Result.result = "time_nanosleep"
+external nanosleep : Timespec.t -> ((Timespec.t option), [> `EUnix of Unix.error]) Result.result = "time_nanosleep"
+
+external clock_nanosleep : Clock.t -> ?abs:bool -> Timespec.t -> ((Timespec.t option), [> `EUnix of Unix.error]) Result.result = "time_clock_nanosleep"
 

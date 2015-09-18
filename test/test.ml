@@ -1,10 +1,10 @@
-let print time =
+let print_time time =
   Printf.printf "s = %s, ns = %s"
     (Int64.to_string Time.Timespec.(time.tv_sec)) 
     (Int64.to_string Time.Timespec.(time.tv_nsec)) 
 
 let print = function
-  | Result.Ok time -> print time
+  | Result.Ok time -> print_time time
   | Result.Error (`EUnix err) -> print_endline (Unix.error_message err)
 
 let test name c =
@@ -12,11 +12,10 @@ let test name c =
   match c with
   | Some clock ->
     begin
-      print_string ", time: "; print (Time.clock_gettime clock);
-      print_string ", resolution: "; print (Time.clock_getres clock);
-      print_endline ""
+      print_string "\n * time: "; print (Time.clock_gettime clock);
+      print_string "\n * resolution: "; print (Time.clock_getres clock); print_endline "";
     end
-  | None -> print_endline " unavailable"
+  | None -> print_endline "\n * unavailable"
 
 let _ =
   let open Time.Clock in
@@ -38,5 +37,21 @@ let _ =
   let () = test "uptime_fast" uptime_fast in
   let () = test "uptime_precise" uptime_precise in
   let () = test "virtual_" virtual_ in
+  print_endline "done"
+
+let _ =
+  let open Time.Clock in
+  print_string "nanosleep\n * ";
+  let sec1 = Time.Timespec.create Int64.one Int64.zero in
+  let () = match Time.nanosleep sec1 with
+    | Result.Ok t -> (begin match t with None -> print_string "without interrupt" | Some t -> print_time t end; print_endline "")
+    | Result.Error (`EUnix err) -> begin print_string "error: "; print_endline (Unix.error_message err) end
+  in
+
+  print_string "clock_nanosleep realtime\n * ";
+  let () = match Time.clock_nanosleep realtime sec1 with
+    | Result.Ok t -> (begin match t with None -> print_string "without interrupt" | Some t -> print_time t end; print_endline "")
+    | Result.Error (`EUnix err) -> begin print_string "error: "; print_endline (Unix.error_message err) end
+  in
   print_endline "done"
 

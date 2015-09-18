@@ -150,9 +150,13 @@ CAMLprim value time_clock_gettime(value clock) {
   int lerrno;
   clockid_t clk;
   clk = Int_val(clock);
+  int rc;
 
-  if (0 != clock_gettime(clk, &time)) {
-    lerrno = errno;
+  caml_release_runtime_system();
+  rc = clock_gettime(clk, &time);
+  lerrno = errno;
+  caml_acquire_runtime_system();
+  if (0 != rc) {
     goto ERROR;
   }
 
@@ -181,12 +185,17 @@ CAMLprim value time_clock_getres(value clock) {
   CAMLlocal2(result, pair);
 
   struct timespec time;
-  int lerrno;
   clockid_t clk;
+  int lerrno;
+  int rc;
+
   clk = Int_val(clock);
 
-  if (0 != clock_getres(clk, &time)) {
-    lerrno = errno;
+  caml_release_runtime_system();
+  rc = clock_getres(clk, &time);
+  lerrno = errno;
+  caml_acquire_runtime_system();
+  if (0 != rc) {
     goto ERROR;
   }
 
@@ -214,15 +223,20 @@ CAMLprim value time_clock_settime(value clock, value t) {
   CAMLlocal2(result, pair);
 
   struct timespec time;
-  int lerrno;
   clockid_t clk;
+  int lerrno;
+  int rc;
+
   clk = Int_val(clock);
 
   time.tv_sec = Int64_val(Field(t, 0));
   time.tv_nsec = Int64_val(Field(t, 1));
 
-  if (0 != clock_settime(clk, &time)) {
-    lerrno = errno;
+  caml_release_runtime_system();
+  rc = clock_settime(clk, &time);
+  lerrno = errno;
+  caml_acquire_runtime_system();
+  if (0 != rc) {
     goto ERROR;
   }
 
@@ -248,25 +262,34 @@ CAMLprim value time_nanosleep(value time) {
   struct timespec time_in;
   struct timespec time_out;
   int lerrno;
-  bool interrupted = false;
+  int rc;
 
   time_in.tv_sec = Int64_val(Field(time, 0));
   time_in.tv_nsec = Int64_val(Field(time, 1));
+  time_out.tv_sec = time_out.tv_nsec = 0;
 
-  if (0 != nanosleep(&time_in, &time_out)) {
-    if (EINTR != (lerrno = errno)) {
+  caml_release_runtime_system();
+  rc = nanosleep(&time_in, &time_out);
+  lerrno = errno;
+  caml_acquire_runtime_system();
+  if (0 != rc) {
+    if (EINTR != lerrno) {
       goto ERROR;
     }
-    interrupted = true;
+    goto INTERRUPTED;
   }
 
+  result = caml_alloc(1, 0); // Result.Ok
+  Store_field(result, 0, Val_none);
+  goto END;
+
+INTERRUPTED:
   rtime = caml_alloc(2, 0);
   Store_field(rtime, 0, caml_copy_int64(time_out.tv_sec));
   Store_field(rtime, 1, caml_copy_int64(time_out.tv_nsec));
 
-  pair = caml_alloc(2, 0);
-  Store_field(pair, 0, Val_bool(interrupted));
-  Store_field(pair, 1, rtime);
+  pair = caml_alloc(1, 0); // Some
+  Store_field(pair, 0, rtime);
 
   result = caml_alloc(1, 0); // Result.Ok
   Store_field(result, 0, pair);
@@ -284,4 +307,62 @@ END:
   CAMLreturn(result);
 }
 
-// clock_nanosleep
+CAMLprim value time_clock_nanosleep(value clock, value abstime, value time) {
+  CAMLparam3(clock, abstime, time);
+  CAMLlocal3(result, pair, rtime);
+  clockid_t clk;
+  struct timespec time_in;
+  struct timespec time_out;
+  int flags = 0;
+  int lerrno;
+  int rc;
+
+  clk = Int_val(clock);
+  if (Val_none != abstime) {
+    if (true == Bool_val(Field(abstime, 0))) {
+      flags = TIMER_ABSTIME;
+    }
+  }
+  time_in.tv_sec = Int64_val(Field(time, 0));
+  time_in.tv_nsec = Int64_val(Field(time, 1));
+
+  caml_release_runtime_system();
+  rc = clock_nanosleep(clk, flags, &time_in, &time_out);
+  lerrno = errno;
+  caml_acquire_runtime_system();
+
+  if (0 != rc) {
+    if (EINTR != lerrno) {
+      goto ERROR;
+    }
+    goto INTERRUPTED;
+  }
+
+  result = caml_alloc(1, 0); // Result.Ok
+  Store_field(result, 0, Val_none);
+  goto END;
+
+INTERRUPTED:
+  rtime = caml_alloc(2, 0);
+  Store_field(rtime, 0, caml_copy_int64(time_out.tv_sec));
+  Store_field(rtime, 1, caml_copy_int64(time_out.tv_nsec));
+
+  pair = caml_alloc(1, 0); // Some
+  Store_field(pair, 0, rtime);
+
+  result = caml_alloc(1, 0); // Result.Ok
+  Store_field(result, 0, pair);
+  goto END;
+
+ERROR:
+  pair = caml_alloc(2, 0);
+  Store_field(pair, 0, eunix); // `EUnix
+  Store_field(pair, 1, unix_error_of_code(lerrno));
+
+  result = caml_alloc(1, 1); // Result.Error
+  Store_field(result, 0, pair);
+
+END:
+  CAMLreturn(result);
+}
+

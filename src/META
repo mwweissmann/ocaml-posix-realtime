@@ -1,6 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: 8af67e9e40dafda38838185e23aa47c6)
-version = "0.2.1"
+# DO NOT EDIT (digest: 8313985897adb176ca51b16019c7603c)
+version = "0.3.0"
 description = "POSIX clock and time functions"
 requires = "unix result"
 archive(byte) = "time.cma"

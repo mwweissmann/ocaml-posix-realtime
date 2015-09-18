@@ -87,6 +87,11 @@ module Timespec : sig
       value. *)
   val sub : t -> t -> t
 
+  val add_sec : int64 -> t -> t
+  val add_nsec : int64 -> t -> t
+  val sub_sec : int64 -> t -> t
+  val sub_nsec : int64 -> t -> t
+
   (** [compare t1 t2] compares the two time values [t1] and [t2]. It returns
       [0] if [t1] is equal to [2], a negative integer if [t1] is less than [t2],
       and a positive integer if [t1] is greater than [t2]. *)
@@ -109,8 +114,15 @@ val clock_gettime : Clock.t -> (Timespec.t, [>`EUnix of Unix.error]) Result.resu
     is returned.  *)
 val clock_settime : Clock.t -> Timespec.t -> (unit, [>`EUnix of Unix.error]) Result.result
 
-(** [nanosleep time] lets the system sleep for [time]. Along with an [Ok]
-    return value comes a pair: a boolean to indicate whether the call was
-    interrupted by a signal and the remaining time. *)
-val nanosleep : Clock.t -> ((bool * Clock.t), [> `EUnix of Unix.error]) Result.result
+(** [nanosleep time] lets the system sleep for [time]. If the call was
+    interrupted by a signal, the [Ok] return value will bring [Some time] value
+    carrying the remaining time -- otherwise [None]. *)
+val nanosleep : Timespec.t -> ((Timespec.t option), [> `EUnix of Unix.error]) Result.result
+
+(** [clock_nanosleep clock time ~abs:a] lets the system sleep for [time]. The
+    duration is based on the clock [clock]. [time] either gives a relative time
+    when [~abs] is false or an absolute time when [~abs] is true. The default
+    case is relative time.
+    The return value is analog to [nanosleep]. *)
+val clock_nanosleep : Clock.t -> ?abs:bool -> Timespec.t -> ((Timespec.t option), [> `EUnix of Unix.error]) Result.result
 
