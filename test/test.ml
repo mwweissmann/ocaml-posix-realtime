@@ -12,8 +12,8 @@ let test name c =
   match c with
   | Some clock ->
     begin
-      print_string ", time: "; Time.clock_gettime clock |> print;
-      print_string ", resolution: "; Time.clock_getres clock |> print;
+      print_string ", time: "; print (Time.clock_gettime clock);
+      print_string ", resolution: "; print (Time.clock_getres clock);
       print_endline ""
     end
   | None -> print_endline " unavailable"
