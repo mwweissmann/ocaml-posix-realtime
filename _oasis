@@ -1,33 +1,36 @@
 OASISFormat: 0.4
-Name:        time
+Name:        posix-realtime
 Version:     0.3.0
-Synopsis:    POSIX clock and time functions
-Authors:     Markus Weissmann
+Synopsis:    POSIX realtime extension
+Authors:     Markus W. Weissmann <markus.weissmann@in.tum.de>
+Maintainers: Markus W. Weissmann <markus.weissmann@in.tum.de>
+Homepage:    https://github.com/mwweissmann/ocaml-posix-realtime/
 License:     MIT
 Plugins:     META (0.4)
 
-Library "time"
-  Path:       src
-  CSources:   time_stubs.c
-  CCLib:      -lrt
-  CCOpt:      -O2 -Wall -Wextra -Wno-unused-parameter
-  BuildTools: ocamlbuild
-  Modules:    Time
-  BuildDepends: unix, result
+Library "posix-realtime"
+  Path:                 src
+  CSources:             common.h, common.c, time.c, mqueue.c
+  CCLib:                -lrt
+  CCOpt:                -O2 -Wall -Wextra -Wno-unused-parameter
+  BuildTools:           ocamlbuild
+  Modules:              Posix_realtime
+  BuildDepends:         unix, result
 
 Document doclib
-  Title:                API reference for POSIX clock and time
+  Title:                API reference for POSIX realtime
   Type:                 ocamlbuild (0.4)
   Install:              false
   BuildTools+:          ocamlbuild, ocamldoc
   XOCamlbuildPath:      src
-  XOCamlbuildLibraries: time
+  XOCamlbuildLibraries: posix-realtime
 
 Executable "test"
-  Path:       test
-  MainIs:     test.ml
-  BuildDepends: time, result
-  CompiledObject: best
-  BuildTools: ocamlbuild
-  Install: false
+  Path:                 test
+  MainIs:               test.ml
+  BuildDepends:         posix-realtime, result
+  CompiledObject:       best
+  BuildTools:           ocamlbuild
+  Install:              false
+  Build:                false
 

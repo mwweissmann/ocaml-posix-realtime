@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: fd39db0863767670a1ca2a95cb17dace) *)
+(* DO NOT EDIT (digest: db54e3394a77a19215b949254942468f) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -607,11 +607,11 @@ end
 open Ocamlbuild_plugin;;
 let package_default =
   {
-     MyOCamlbuildBase.lib_ocaml = [("time", ["src"], [])];
-     lib_c = [("time", "src", [])];
+     MyOCamlbuildBase.lib_ocaml = [("posix-realtime", ["src"], [])];
+     lib_c = [("posix-realtime", "src", ["src/common.h"])];
      flags =
        [
-          (["oasis_library_time_ccopt"; "compile"],
+          (["oasis_library_posix_realtime_ccopt"; "compile"],
             [
                (OASISExpr.EBool true,
                  S
@@ -626,9 +626,9 @@ let package_default =
                       A "-Wno-unused-parameter"
                    ])
             ]);
-          (["oasis_library_time_cclib"; "link"],
+          (["oasis_library_posix_realtime_cclib"; "link"],
             [(OASISExpr.EBool true, S [A "-cclib"; A "-lrt"])]);
-          (["oasis_library_time_cclib"; "ocamlmklib"; "c"],
+          (["oasis_library_posix_realtime_cclib"; "ocamlmklib"; "c"],
             [(OASISExpr.EBool true, S [A "-lrt"])])
        ];
      includes = [("test", ["src"])]

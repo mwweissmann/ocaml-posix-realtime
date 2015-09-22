@@ -15,7 +15,7 @@
 #include <caml/fail.h>
 #include <caml/unixsupport.h>
 
-static value eunix;
+#include "common.h"
 
 #define Val_none Val_int(0)
 
@@ -30,8 +30,6 @@ static value Val_some_int(int i) {
 CAMLprim value time_initialize(void) {
   CAMLparam0();
   CAMLlocal1(clocks);
-
-  eunix = caml_hash_variant("EUnix");
 
   clocks = caml_alloc(18, 0);
 

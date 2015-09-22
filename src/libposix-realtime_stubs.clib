@@ -1,0 +1,6 @@
+# OASIS_START
+# DO NOT EDIT (digest: 00f04fd746ab3e03ddd939155645a77e)
+common.o
+time.o
+mqueue.o
+# OASIS_STOP

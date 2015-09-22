@@ -1,4 +1,7 @@
-external initialize : unit -> (
+external common_initialize : unit -> unit = "common_initialize"
+let () = common_initialize ()
+
+external time_initialize : unit -> (
       int * int option * int option * int option *
       int option * int option * int option * int option *
       int option * int option * int option * int option *
@@ -27,7 +30,7 @@ module Clock = struct
     uptime_fast,
     uptime_precise,
     virtual_
-  ) = initialize ()
+  ) = time_initialize ()
 end
 
 module Timespec = struct
@@ -76,4 +79,56 @@ external clock_settime : Clock.t -> Timespec.t -> (unit, [>`EUnix of Unix.error]
 external nanosleep : Timespec.t -> ((Timespec.t option), [> `EUnix of Unix.error]) Result.result = "time_nanosleep"
 
 external clock_nanosleep : Clock.t -> ?abs:bool -> Timespec.t -> ((Timespec.t option), [> `EUnix of Unix.error]) Result.result = "time_clock_nanosleep"
+
+type mqd = Unix.file_descr
+
+type mq_attr = {
+  mq_flags : int;
+  mq_maxmsg : int;
+  mq_msgsize : int;
+  mq_curmsgs : int
+}
+
+type message = {
+  payload : Bytes.t;
+  priority : int;
+}
+
+external mq_initialize : unit -> unit = "mqueue_initialize"
+let () = mq_initialize ()
+
+external mq_open : string -> Unix.open_flag list -> Unix.file_perm -> mq_attr ->
+  (mqd, [>`EUnix of Unix.error]) Result.result = "mqueue_mq_open"
+
+external mq_close : mqd ->
+  (unit, [>`EUnix of Unix.error]) Result.result = "mqueue_mq_close"
+
+external mq_send : mqd -> message ->
+  (unit, [>`EUnix of Unix.error]) Result.result = "mqueue_mq_send"
+
+external mq_timedsend : mqd -> message -> Timespec.t ->
+  (unit, [>`EUnix of Unix.error]) Result.result = "mqueue_mq_timedsend"
+
+external mq_receive : mqd -> int ->
+  (message, [>`EUnix of Unix.error]) Result.result = "mqueue_mq_receive"
+
+external mq_timedreceive : mqd -> int -> Timespec.t ->
+  (message, [>`EUnix of Unix.error]) Result.result = "mqueue_mq_timedreceive"
+
+external mq_unlink : string ->
+  (unit, [>`EUnix of Unix.error]) Result.result = "mqueue_mq_unlink"
+
+external mq_getattr : mqd ->
+  (mq_attr, [>`EUnix of Unix.error]) Result.result = "mqueue_mq_getattr"
+
+external mq_setattr : mqd -> mq_attr ->
+  (mq_attr, [>`EUnix of Unix.error]) Result.result = "mqueue_mq_setattr"
+
+external mq_prio_max_ext : unit -> int = "mqueue_mq_prio_max"
+let mq_prio_max = mq_prio_max_ext ()
+
+external mq_name_max_ext : unit -> int = "mqueue_mq_name_max"
+let mq_name_max = mq_name_max_ext ()
+
+external fd_of_mqd : mqd -> Unix.file_descr = "%identity"
 

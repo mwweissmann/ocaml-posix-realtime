@@ -1,12 +1,12 @@
 # OASIS_START
-# DO NOT EDIT (digest: 8313985897adb176ca51b16019c7603c)
+# DO NOT EDIT (digest: 5ec34bf9f2b6d6e6f3f452d0a53fdc5f)
 version = "0.3.0"
-description = "POSIX clock and time functions"
+description = "POSIX realtime extension"
 requires = "unix result"
-archive(byte) = "time.cma"
-archive(byte, plugin) = "time.cma"
-archive(native) = "time.cmxa"
-archive(native, plugin) = "time.cmxs"
-exists_if = "time.cma"
+archive(byte) = "posix-realtime.cma"
+archive(byte, plugin) = "posix-realtime.cma"
+archive(native) = "posix-realtime.cmxa"
+archive(native, plugin) = "posix-realtime.cmxs"
+exists_if = "posix-realtime.cma"
 # OASIS_STOP
 
