@@ -74,6 +74,8 @@ module Timespec = struct
   let sub_nsec nsec t = create t.tv_sec (Int64.sub t.tv_nsec nsec)
 end
 
+external clock_getcpuclockid : int -> (Clock.t, [>`EUnix of Unix.error]) Result.result = "time_clock_getcpuclockid"
+
 external clock_gettime : Clock.t -> (Timespec.t, [>`EUnix of Unix.error]) Result.result = "time_clock_gettime"
 
 external clock_getres : Clock.t -> (Timespec.t, [>`EUnix of Unix.error]) Result.result = "time_clock_getres"
@@ -83,6 +85,10 @@ external clock_settime : Clock.t -> Timespec.t -> (unit, [>`EUnix of Unix.error]
 external nanosleep : Timespec.t -> ((Timespec.t option), [> `EUnix of Unix.error]) Result.result = "time_nanosleep"
 
 external clock_nanosleep : Clock.t -> ?abs:bool -> Timespec.t -> ((Timespec.t option), [> `EUnix of Unix.error]) Result.result = "time_clock_nanosleep"
+
+(*
+external timer_create : Clock.t -> Sigevent.t -> (timer, [>`EUnix of Unix.error]) Result.result = "time_timer_create"
+*)
 
 type mqd = Unix.file_descr
 
@@ -97,9 +103,6 @@ type message = {
   payload : Bytes.t;
   priority : int;
 }
-
-external mq_initialize : unit -> unit = "mqueue_initialize"
-let () = mq_initialize ()
 
 external mq_open : string -> Unix.open_flag list -> Unix.file_perm -> mq_attr ->
   (mqd, [>`EUnix of Unix.error]) Result.result = "mqueue_mq_open"

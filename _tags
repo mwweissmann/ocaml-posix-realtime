@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 38ed22ebe6e3cb39976331fa1308f354)
+# DO NOT EDIT (digest: 00dfaf65895578bdaaee08c30ffdef22)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -34,10 +34,14 @@ true: annot, bin_annot
 "src/time.c": pkg_unix
 "src/mqueue.c": pkg_result
 "src/mqueue.c": pkg_unix
-# Executable test
-<test/test.{native,byte}>: pkg_result
-<test/test.{native,byte}>: pkg_unix
-<test/test.{native,byte}>: use_posix-realtime
+# Executable test-time
+<test/test_time.{native,byte}>: pkg_result
+<test/test_time.{native,byte}>: pkg_unix
+<test/test_time.{native,byte}>: use_posix-realtime
+# Executable test-mqueue
+<test/test_mqueue.{native,byte}>: pkg_result
+<test/test_mqueue.{native,byte}>: pkg_unix
+<test/test_mqueue.{native,byte}>: use_posix-realtime
 <test/*.ml{,i,y}>: pkg_result
 <test/*.ml{,i,y}>: pkg_unix
 <test/*.ml{,i,y}>: use_posix-realtime

@@ -139,6 +139,10 @@ val clock_nanosleep : Clock.t -> ?abs:bool -> Timespec.t -> ((Timespec.t option)
     case is relative time.
     The return value is analog to [nanosleep]. *)
 
+val clock_getcpuclockid : int -> (Clock.t, [>`EUnix of Unix.error]) Result.result
+(** [clock_getcpuclockid pid] returns the clock for the process of the given
+    process-id [pid]. *)
+
 (** {2 POSIX message queue} *)
 
 type mqd

@@ -27,12 +27,21 @@ Document "api"
   XOCamlbuildPath:      src/
   XOCamlbuildLibraries: posix-realtime
 
-Executable "test"
+Executable "test-time"
   Path:                 test/
-  MainIs:               test.ml
+  MainIs:               test_time.ml
   BuildDepends:         posix-realtime, result
   CompiledObject:       best
   BuildTools:           ocamlbuild
   Install:              false
-  Build:                false
+  Build:                true
+
+Executable "test-mqueue"
+  Path:                 test/
+  MainIs:               test_mqueue.ml
+  BuildDepends:         posix-realtime, result
+  CompiledObject:       best
+  BuildTools:           ocamlbuild
+  Install:              false
+  Build:                true
 

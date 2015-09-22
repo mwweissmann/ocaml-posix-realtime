@@ -364,3 +364,38 @@ END:
   CAMLreturn(result);
 }
 
+CAMLprim value time_clock_getcpuclockid(value pid) {
+  CAMLparam1(pid);
+  CAMLlocal2(result, pair);
+  int rc;
+  int lerrno;
+  clockid_t clk;
+  pid_t p;
+
+  p = Int_val(pid);
+  caml_release_runtime_system();
+  rc = clock_getcpuclockid(p, &clk);
+  lerrno = errno;
+  caml_acquire_runtime_system();
+
+  if (0 != rc) {
+    goto ERROR;
+  }
+
+  result = caml_alloc(1, 0); // Result.Ok
+  Store_field(result, 0, Val_int(clk));
+  goto END;
+
+ERROR:
+  pair = caml_alloc(2, 0);
+  Store_field(pair, 0, eunix); // `EUnix
+  Store_field(pair, 1, unix_error_of_code(lerrno));
+
+  result = caml_alloc(1, 1); // Result.Error
+  Store_field(result, 0, pair);
+  goto END;
+
+END:
+  CAMLreturn(result);
+}
+
