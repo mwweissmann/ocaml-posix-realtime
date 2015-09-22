@@ -11,6 +11,7 @@ external time_initialize : unit -> (
 
 module Clock = struct
   type t = int
+
   let (
     realtime,
     monotonic,
@@ -65,8 +66,11 @@ module Timespec = struct
     create Int64.(sub x.tv_sec y.tv_sec) Int64.(sub x.tv_nsec y.tv_nsec)
 
   let add_sec sec t = { t with tv_sec = Int64.add t.tv_sec sec }
+
   let sub_sec sec t = { t with tv_sec = Int64.sub t.tv_sec sec }
+
   let add_nsec nsec t = create t.tv_sec (Int64.add t.tv_nsec nsec)
+
   let sub_nsec nsec t = create t.tv_sec (Int64.sub t.tv_nsec nsec)
 end
 

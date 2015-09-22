@@ -9,7 +9,7 @@ License:     MIT
 Plugins:     META (0.4)
 
 Library "posix-realtime"
-  Path:                 src
+  Path:                 src/
   CSources:             common.h, common.c, time.c, mqueue.c
   CCLib:                -lrt
   CCOpt:                -O2 -Wall -Wextra -Wno-unused-parameter
@@ -17,16 +17,18 @@ Library "posix-realtime"
   Modules:              Posix_realtime
   BuildDepends:         unix, result
 
-Document doclib
+Document "api"
   Title:                API reference for POSIX realtime
   Type:                 ocamlbuild (0.4)
   Install:              false
-  BuildTools+:          ocamlbuild, ocamldoc
-  XOCamlbuildPath:      src
+  BuildTools:           ocamlbuild, ocamldoc
+  Format:               HTML
+  Index:                index.html
+  XOCamlbuildPath:      src/
   XOCamlbuildLibraries: posix-realtime
 
 Executable "test"
-  Path:                 test
+  Path:                 test/
   MainIs:               test.ml
   BuildDepends:         posix-realtime, result
   CompiledObject:       best
