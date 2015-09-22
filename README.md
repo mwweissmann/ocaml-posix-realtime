@@ -2,7 +2,7 @@
 
 This library provides access to the set of operating system services standardized by [IEEE Std 1003.1b-1993 Realtime Extension](http://pubs.opengroup.org/onlinepubs/9699919799/functions/V2_chap02.html#tag_15_08) or short *POSIX realtime*.
 
-Functions never raise an exception; errors are handled via the ```result``` type to increase compile-time guarantees about the correctness of your code.
+Functions never raise an exception; errors are handled via the ```('ok, 'error) result``` type to increase compile-time guarantees about the correctness of your code.
 
 ```Posix_realtime``` currently implements clocks, timers and message passing of the POSIX realtime extension.
 
